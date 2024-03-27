@@ -5,7 +5,6 @@ runs:
   steps:
     - id: skpr-setup
       run: |
-        cli_version=$(curl -sSL "https://api.github.com/repos/skpr/cli/releases/latest" | jq -r .tag_name)
-        curl -sSL https://github.com/skpr/cli/releases/download/${cli_version}/skpr_${cli_version:1}_linux_amd64.deb -o skpr-cli.deb
+        gh release download --repo skpr/cli --pattern skpr_*_linux_amd64.deb -O skpr-cli.deb
         sudo dpkg -i skpr-cli.deb
       shell: bash
