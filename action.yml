@@ -9,5 +9,5 @@ runs:
         echo "Downloading skpr cli from $download_url"
         wget -q $download_url -O skpr.deb
         echo "Installing skpr cli"
-        sudo apt install skpr.deb
+        sudo apt install -y ./skpr.deb
       shell: bash
