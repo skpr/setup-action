@@ -5,6 +5,7 @@ runs:
   steps:
     - id: skpr-setup
       run: |
+        DEBIAN_FRONTEND=noninteractive sudo apt install gh
         gh release download --repo skpr/cli --pattern skpr_*_linux_amd64.deb -O skpr-cli.deb
         sudo dpkg -i skpr-cli.deb
       shell: bash
