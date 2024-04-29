@@ -5,7 +5,6 @@ runs:
   steps:
     - id: skpr-setup
       run: |
-        wget -q https://packages.skpr.io/apt/packages.skpr.io.pub -O- | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/packages.skpr.io.pub > /dev/null
-        echo "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/packages.skpr.io.pub] https://packages.skpr.io/apt stable main" | sudo tee -a /etc/apt/sources.list.d/skpr.list > /dev/null
-        sudo apt update && sudo apt install skpr
+        gh release download --repo skpr/cli --pattern skpr_*_linux_amd64.deb -O skpr-cli.deb
+        sudo dpkg -i skpr-cli.deb
       shell: bash
