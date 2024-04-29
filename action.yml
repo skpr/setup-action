@@ -5,6 +5,9 @@ runs:
   steps:
     - id: skpr-setup
       run: |
-        gh release download --repo skpr/cli --pattern skpr_*_linux_amd64.deb -O skpr-cli.deb
-        sudo dpkg -i skpr-cli.deb
+        download_url=$(wget -q -O - 'https://api.github.com/repos/skpr/cli/releases/latest' | jq -r '.assets[] | select(.name|endswith("linux_amd64.deb")).browser_download_url')
+        echo "Downloading skpr cli from $download_url"
+        wget -q $download_url -O skpr.deb
+        echo "Installing skpr cli"
+        sudo apt install skpr.deb
       shell: bash
