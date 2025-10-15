@@ -1,10 +1,37 @@
 name: Skpr Setup
 description: Setup the Skpr client
+inputs:
+  prerelease:
+    description: "If true, install the latest pre-release instead of the latest stable."
+    required: false
+    default: "false"
+
 runs:
   using: composite
   steps:
     - id: skpr-setup
-      run: |
-        gh release download --repo skpr/cli --pattern skpr_*_linux_amd64.deb -O skpr-cli.deb
-        sudo dpkg -i skpr-cli.deb
       shell: bash
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      run: |
+        set -euo pipefail
+
+        REPO="skpr/cli"
+        PATTERN="skpr_*_linux_amd64.deb"
+
+        if [[ "${{ inputs.prerelease }}" == "true" ]]; then
+          echo "Selecting latest pre-release"
+
+          TAG="$(gh api repos/$REPO/releases --jq 'map(select(.prerelease)) | .[0].tag_name')"
+          if [[ -z "${TAG:-}" || "${TAG}" == "null" ]]; then
+            echo "No pre-releases found for $REPO." >&2
+            exit 1
+          fi
+        else
+          echo "Selecting latest stable release"
+          TAG="$(gh release view --repo "$REPO" --latest --json tagName --jq .tagName)"
+        fi
+
+        echo "Downloading tag: $TAG (pattern: $PATTERN)"
+        gh release download --repo "$REPO" --tag "$TAG" --pattern "$PATTERN" --clobber -O skpr-cli.deb
+        sudo dpkg -i skpr-cli.deb
